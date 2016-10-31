@@ -5,32 +5,32 @@
 <title>Sankey Diagram</title>
 <style>
 
-@import url(../style.css?aea6f0a);
+  @import url(../style.css?aea6f0a);
 
-#chart {
-  height: 500px;
-}
+  #chart {
+    height: 500px;
+  }
 
-.node rect {
-  cursor: move;
-  fill-opacity: .9;
-  shape-rendering: crispEdges;
-}
+  .node rect {
+    cursor: move;
+    fill-opacity: .9;
+    shape-rendering: crispEdges;
+  }
 
-.node text {
-  pointer-events: none;
-  text-shadow: 0 1px 0 #fff;
-}
+  .node text {
+    pointer-events: none;
+    text-shadow: 0 1px 0 #fff;
+  }
 
-.link {
-  fill: none;
-  stroke: #000;
-  stroke-opacity: .2;
-}
+  .link {
+    fill: none;
+    stroke: #000;
+    stroke-opacity: .2;
+  }
 
-.link:hover {
-  stroke-opacity: .5;
-}
+  .link:hover {
+    stroke-opacity: .5;
+  }
 
 </style>
 <body>
@@ -145,11 +145,3 @@ d3.json("energy.json", function(energy) {
 });
 
 </script>
-<script>
-
-GoogleAnalyticsObject = "ga", ga = function() { ga.q.push(arguments); }, ga.q = [], ga.l = +new Date;
-ga("create", "UA-48272912-3", "ocks.org");
-ga("send", "pageview");
-
-</script>
-<script async src="//www.google-analytics.com/analytics.js"></script>
