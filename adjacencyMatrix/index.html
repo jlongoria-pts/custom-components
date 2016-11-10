@@ -1,421 +1,212 @@
 
 <!DOCTYPE html>
-<html>
-<head>
+<html class="ocks-org do-not-copy">
 <meta charset="utf-8">
-  <meta property="og:image" content="http://romsson.github.io/dragit/img/nations.png"/>
-  <meta name="twitter:card" content="photo">
-  <meta name="twitter:site" content="@romsson">
-  <meta name="twitter:creator" content="@romsson">
-  <meta name="twitter:title" content="A Re-Recreation of Gapminder’s Wealth & Health of Nations - Romain Vuillemot">
-  <meta name="twitter:image:src" content="http://romsson.github.io/dragit/img/nations.png"/>
-  <meta name="twitter:domain" content="http://romsson.github.io/dragit/">
-  <title>A Re-Recreation of Gapminder’s Wealth & Health of Nations - Romain Vuillemot</title>
-  <meta name="description" content="Drag & Drop World Countries (if you can)">
-  <link href="../src/dragit.css" rel="stylesheet"/>
-  <script src="../lib/d3.v3.js"></script>
-  <script src="../src/dragit.js"></script>
-</head>
-<title>A Re-Recreation of Gapminder’s Wealth & Health of Nations - Romain Vuillemot</title>
+<title>Les Misérables Co-occurrence</title>
 <style>
 
-body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  margin-left:40px;
-  font-weight: 200;
-  font-size: 14px;
+@import url(../style.css?aea6f0a);
+
+.background {
+  fill: #eee;
 }
 
-html,body {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+line {
+  stroke: #fff;
 }
 
-text {
-  cursor: default;
-}
-
-h1 {
-  font-weight: 400;
-}
-
-#chart {
-  height: 506px;
-}
-
-text {
-  font-size: 10px;
-}
-
-.dot {
-  stroke: #000;
-}
-
-.axis path, .axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
-
-.label {
-  fill: #777;
-}
-
-.year.label {
-  font: 500 196px "Helvetica Neue";
-  fill: #ddd;
-}
-
-.country.label  {
-  font: 500 96px "Helvetica Neue";
-  fill: #ddd;
-}
-
-.year.label.active {
-  fill: #aaa;
-}
-
-circle.pointTrajectory {
-   pointer-events: none;
-   stroke: lightgray;
-   fill: black;
-   opacity: 0;
-}
-
-path.lineTrajectory {
-  stroke-width: 2;
-  stroke-opacity: .5;
-  stroke: black;
-  fill: none;
-  pointer-events: none;
-}
-
-.selected {
-  stroke-width: 4;
+text.active {
+  fill: red;
 }
 
 </style>
+<script src="https://d3js.org/d3.v2.min.js" charset="utf-8"></script>
 
-<h1>A Re-Recreation of Gapminder’s Wealth & Health of Nations</h1>
+<header>
+  <aside>April 10, 2012</aside>
+  <a href="../" rel="author">Mike Bostock</a>
+</header>
 
-<i>Use your mouse to click and drag countries (represented as circles) to explore +200 years of life expectancy and income indicators.</i></p>
+<h1><i>Les Misérables</i> Co-occurrence</h1>
 
-<div id="chart" style="margin:0px"></div>
-<span id="min-time">1800</span>
-<input type="range" name="points" min="0" max="208" step="1" value="0" id="slider-time" style="width:900px">
-<span id="max-time">2008</span>
-<br>
-<p>
-Original creation by <a href="http://www.gapminder.org/world/">Gapminder</a> using <a href="https://github.com/RandomEtc/mind-gapper-js">Tom Carden</a> JavaScript version.<br>
-Recreation by <a href="http://bost.ocks.org/mike/nations/">Mike Bostock</a> with <a href="http://d3js.org/">D3.js</a>.<br>
-Re-Recreation using <a href="http://romsson.github.io/dragit/">dragit.js</a> by <a href="http://romain.vuillemot.net/">Romain Vuillemot</a> (view <a href="https://github.com/romsson/dragit/blob/master/example/nations.html">source</a> on GitHub).
+<aside style="margin-top:80px;">
+<p>Order: <select id="order">
+  <option value="name">by Name</option>
+  <option value="count">by Frequency</option>
+  <option value="group">by Cluster</option>
+</select>
 
-<div class="twitter-share-container">
-  <a href="https://twitter.com/share" class="twitter-share-button" data-via="romsson" data-url="http://romsson.github.io/dragit/example/nations.html">Tweet</a>
-  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-</div></p>
+<p>This matrix diagram visualizes character co-occurrences in Victor Hugo’s <i><a href="http://en.wikipedia.org/wiki/Les_Misérables">Les Misérables</a></i>.
 
-<!-- Place this tag in your head or just before your close body tag. -->
-<script type="text/javascript" src="https://apis.google.com/js/platform.js"></script>
+<p>Each colored cell represents two characters that appeared in the same chapter; darker cells indicate characters that co-occurred more frequently.
 
-<!-- Place this tag where you want the share button to render. -->
-<div class="g-plus" data-action="share" data-annotation="bubble" data-href="http://romsson.github.io/dragit/example/nations.html"></div>
+<p>Use the drop-down menu to reorder the matrix and explore the data.
 
-<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId=251461691555585&version=v2.0";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
-
-<br>
-
-<!-- Social media buttons -->
-<div class="fb-share-button" data-href="http://romsson.github.io/dragit/example/nations.html" data-type="button_count"></div>
+<p>Built with <a href="http://d3js.org/">d3.js</a>.
+</aside>
 
 <script>
 
-// Various accessors that specify the four dimensions of data to visualize.
-function x(d) { return d.income; }
-function y(d) { return d.lifeExpectancy; }
-function radius(d) { return d.population; }
-function color(d) { return d.region; }
-function key(d) { return d.name; }
+var margin = {top: 80, right: 0, bottom: 10, left: 80},
+    width = 720,
+    height = 720;
 
-// Chart dimensions.
-var margin = {top: 19.5, right: 19.5, bottom: 19.5, left: 39.5},
-    width = 960 - margin.right,
-    height = 500 - margin.top - margin.bottom;
+var x = d3.scale.ordinal().rangeBands([0, width]),
+    z = d3.scale.linear().domain([0, 4]).clamp(true),
+    c = d3.scale.category10().domain(d3.range(10));
 
-// Various scales. These domains make assumptions of data, naturally.
-var xScale = d3.scale.log().domain([300, 1e5]).range([0, width]),
-    yScale = d3.scale.linear().domain([10, 85]).range([height, 0]),
-    radiusScale = d3.scale.sqrt().domain([0, 5e8]).range([0, 40]),
-    colorScale = d3.scale.category10();
-
-// The x & y axes.
-var xAxis = d3.svg.axis().orient("bottom").scale(xScale).ticks(12, d3.format(",d")),
-    yAxis = d3.svg.axis().scale(yScale).orient("left");
-
-// Create the SVG container and set the origin.
-var svg = d3.select("#chart").append("svg")
+var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
+    .style("margin-left", -margin.left + "px")
   .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-    .attr("class", "gRoot")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-// Add the x-axis.
-svg.append("g")
-    .attr("class", "x axis")
-    .attr("transform", "translate(0," + height + ")")
-    .call(xAxis);
+d3.json("miserables.json", function(miserables) {
+  var matrix = [],
+      nodes = miserables.nodes,
+      n = nodes.length;
 
-// Add the y-axis.
-svg.append("g")
-    .attr("class", "y axis")
-    .call(yAxis);
+  // Compute index per node.
+  nodes.forEach(function(node, i) {
+    node.index = i;
+    node.count = 0;
+    matrix[i] = d3.range(n).map(function(j) { return {x: j, y: i, z: 0}; });
+  });
 
-// Add an x-axis label.
-svg.append("text")
-    .attr("class", "x label")
-    .attr("text-anchor", "end")
-    .attr("x", width)
-    .attr("y", height - 6)
-    .text("income per capita, inflation-adjusted (dollars)");
+  // Convert links to matrix; count character occurrences.
+  miserables.links.forEach(function(link) {
+    matrix[link.source][link.target].z += link.value;
+    matrix[link.target][link.source].z += link.value;
+    matrix[link.source][link.source].z += link.value;
+    matrix[link.target][link.target].z += link.value;
+    nodes[link.source].count += link.value;
+    nodes[link.target].count += link.value;
+  });
 
-// Add a y-axis label.
-svg.append("text")
-    .attr("class", "y label")
-    .attr("text-anchor", "end")
-    .attr("y", 6)
-    .attr("dy", ".75em")
-    .attr("transform", "rotate(-90)")
-    .text("life expectancy (years)");
+  // Precompute the orders.
+  var orders = {
+    name: d3.range(n).sort(function(a, b) { return d3.ascending(nodes[a].name, nodes[b].name); }),
+    count: d3.range(n).sort(function(a, b) { return nodes[b].count - nodes[a].count; }),
+    group: d3.range(n).sort(function(a, b) { return nodes[b].group - nodes[a].group; })
+  };
 
-// Add the year label; the value is set on transition.
-var label = svg.append("text")
-    .attr("class", "year label")
-    .attr("text-anchor", "end")
-    .attr("y", height - 24)
-    .attr("x", width)
-    .text(1800);
+  // The default sort order.
+  x.domain(orders.name);
 
-// Add the country label; the value is set on transition.
-var countrylabel = svg.append("text")
-    .attr("class", "country label")
-    .attr("text-anchor", "start")
-    .attr("y", 80)
-    .attr("x", 20)
-    .text(" ");
+  svg.append("rect")
+      .attr("class", "background")
+      .attr("width", width)
+      .attr("height", height);
 
-var first_time = true;
+  var row = svg.selectAll(".row")
+      .data(matrix)
+    .enter().append("g")
+      .attr("class", "row")
+      .attr("transform", function(d, i) { return "translate(0," + x(i) + ")"; })
+      .each(row);
 
-// Load the data.
-d3.json("../data/nations.json", function(nations) {
+  row.append("line")
+      .attr("x2", width);
 
-  // A bisector since many nation's data is sparsely-defined.
-  var bisect = d3.bisector(function(d) { return d[0]; });
+  row.append("text")
+      .attr("x", -6)
+      .attr("y", x.rangeBand() / 2)
+      .attr("dy", ".32em")
+      .attr("text-anchor", "end")
+      .text(function(d, i) { return nodes[i].name; });
 
-  // Add a dot per nation. Initialize the data at 1800, and set the colors.
-  var dot = svg.append("g")
-      .attr("class", "dots")
-    .selectAll(".dot")
-      .data(interpolateData(1800))
-    .enter().append("circle")
-      .attr("class", "dot")
-      .style("fill", function(d) { return colorScale(color(d)); })
-      .call(position)
-      .on("mousedow", function(d, i) {
+  var column = svg.selectAll(".column")
+      .data(matrix)
+    .enter().append("g")
+      .attr("class", "column")
+      .attr("transform", function(d, i) { return "translate(" + x(i) + ")rotate(-90)"; });
 
-      })
-      .on("mouseup", function(d, i) {
-        dot.classed("selected", false);
-        d3.select(this).classed("selected", !d3.select(this).classed("selected"));
-        dragit.trajectory.display(d, i, "selected");
+  column.append("line")
+      .attr("x1", -width);
 
-        //TODO: test if has been dragged
-        // Look at the state machine history and find a drag event in it?
+  column.append("text")
+      .attr("x", 6)
+      .attr("y", x.rangeBand() / 2)
+      .attr("dy", ".32em")
+      .attr("text-anchor", "start")
+      .text(function(d, i) { return nodes[i].name; });
 
-      })
-      .on("mouseenter", function(d, i) {
-        clear_demo();
-        if(dragit.statemachine.current_state == "idle") {
-          dragit.trajectory.display(d, i)
-          dragit.utils.animateTrajectory(dragit.trajectory.display(d, i), dragit.time.current, 1000)
-          countrylabel.text(d.name);
-          dot.style("opacity", .4)
-          d3.select(this).style("opacity", 1)
-          d3.selectAll(".selected").style("opacity", 1)
-        }
-      })
-      .on("mouseleave", function(d, i) {
-
-        if(dragit.statemachine.current_state == "idle") {
-          countrylabel.text("");
-          dot.style("opacity", 1);
-        }
-
-        dragit.trajectory.remove(d, i);
-      })
-      .call(dragit.object.activate)
-
-  // Add a title.
-  dot.append("title")
-      .text(function(d) { return d.name; });
-
-  // Start a transition that interpolates the data based on year.
-  svg.transition()
-      .duration(30000)
-      .ease("linear")
-
-  // Positions the dots based on data.
-  function position(dot) {
-    dot.attr("cx", function(d) { return xScale(x(d)); })
-       .attr("cy", function(d) { return yScale(y(d)); })
-       .attr("r", function(d) { return radiusScale(radius(d)); });
+  function row(row) {
+    var cell = d3.select(this).selectAll(".cell")
+        .data(row.filter(function(d) { return d.z; }))
+      .enter().append("rect")
+        .attr("class", "cell")
+        .attr("x", function(d) { return x(d.x); })
+        .attr("width", x.rangeBand())
+        .attr("height", x.rangeBand())
+        .style("fill-opacity", function(d) { return z(d.z); })
+        .style("fill", function(d) { return nodes[d.x].group == nodes[d.y].group ? c(nodes[d.x].group) : null; })
+        .on("mouseover", mouseover)
+        .on("mouseout", mouseout);
   }
 
-  // Defines a sort order so that the smallest dots are drawn on top.
-  function order(a, b) {
-    return radius(b) - radius(a);
+  function mouseover(p) {
+    d3.selectAll(".row text").classed("active", function(d, i) { return i == p.y; });
+    d3.selectAll(".column text").classed("active", function(d, i) { return i == p.x; });
   }
 
-  // Updates the display to show the specified year.
-  function displayYear(year) {
-    dot.data(interpolateData(year+dragit.time.min), key).call(position).sort(order);
-    label.text(dragit.time.min + Math.round(year));
+  function mouseout() {
+    d3.selectAll("text").classed("active", false);
   }
 
-  // Interpolates the dataset for the given (fractional) year.
-  function interpolateData(year) {
-    return nations.map(function(d) {
-      return {
-        name: d.name,
-        region: d.region,
-        income: interpolateValues(d.income, year),
-        population: interpolateValues(d.population, year),
-        lifeExpectancy: interpolateValues(d.lifeExpectancy, year)
-      };
-    });
+  d3.select("#order").on("change", function() {
+    clearTimeout(timeout);
+    order(this.value);
+  });
+
+  function order(value) {
+    x.domain(orders[value]);
+
+    var t = svg.transition().duration(2500);
+
+    t.selectAll(".row")
+        .delay(function(d, i) { return x(i) * 4; })
+        .attr("transform", function(d, i) { return "translate(0," + x(i) + ")"; })
+      .selectAll(".cell")
+        .delay(function(d) { return x(d.x) * 4; })
+        .attr("x", function(d) { return x(d.x); });
+
+    t.selectAll(".column")
+        .delay(function(d, i) { return x(i) * 4; })
+        .attr("transform", function(d, i) { return "translate(" + x(i) + ")rotate(-90)"; });
   }
 
-  // Finds (and possibly interpolates) the value for the specified year.
-  function interpolateValues(values, year) {
-    var i = bisect.left(values, year, 0, values.length - 1),
-        a = values[i];
-    if (i > 0) {
-      var b = values[i - 1],
-          t = (year - a[0]) / (b[0] - a[0]);
-      return a[1] * (1 - t) + b[1] * t;
-    }
-    return a[1];
-  }
-
-  init();
-
-  function update(v, duration) {
-    dragit.time.current = v || dragit.time.current;
-    displayYear(dragit.time.current)
-    d3.select("#slider-time").property("value", dragit.time.current);
-  }
-
-  function init() {
-
-    dragit.init(".gRoot");
-
-    dragit.time = {min:1800, max:2009, step:1, current:1800}
-    dragit.data = d3.range(nations.length).map(function() { return Array(); })
-
-    for(var yy = 1800; yy<2009; yy++) {
-
-      interpolateData(yy).filter(function(d, i) {
-        dragit.data[i][yy-dragit.time.min] = [xScale(x(d)), yScale(y(d))];
-
-      })
-    }
-
-    dragit.evt.register("update", update);
-
-    //d3.select("#slider-time").property("value", dragit.time.current);
-
-    d3.select("#slider-time")
-      .on("mousemove", function() {
-        update(parseInt(this.value), 500);
-        clear_demo();
-      })
-
-    var end_effect = function() {
-      countrylabel.text("");
-      dot.style("opacity", 1)
-    }
-
-    dragit.evt.register("dragend", end_effect)
-  }
-
-function clear_demo() {
-  if(first_time) {
-     svg.transition().duration(0);
-    first_time = false;
-    window.clearInterval(demo_interval);
-    countrylabel.text("");
-    dragit.trajectory.removeAll();
-    d3.selectAll(".dot").style("opacity", 1)
-  }
-}
-
-function play_demo() {
-
-  var ex_nations = ["China", "India", "Indonesia", "Italy", "France", "Spain", "Germany", "United States"]
-  var index_random_nation = null;
-  var random_index = Math.floor(Math.random() * ex_nations.length);
-  var random_nation = nations.filter(function(d, i) {
-    if(d.name == ex_nations[random_index]) {
-      index_random_nation = i;
-      return true;
-    }
-  })[0];
-
-  var random_nation = nations[index_random_nation];
-
-  dragit.trajectory.removeAll();
-  dragit.trajectory.display(random_nation, index_random_nation);
-  countrylabel.text(random_nation.name);
-
-  dragit.utils.animateTrajectory(dragit.lineTrajectory, dragit.time.min, 2000)
-
-  d3.selectAll(".dot").style("opacity", .4)
-
-  d3.selectAll(".dot").filter(function(d) {
-    return d.name == random_nation.name;
-  }).style("opacity", 1)
-}
-
-var demo_interval = null;
-
-setTimeout(function() {
-  if(first_time) {
-    play_demo()
-    demo_interval = setInterval(play_demo, 3000)
-  }
-}, 1000);
-
+  var timeout = setTimeout(function() {
+    order("group");
+    d3.select("#order").property("selectedIndex", 2).node().focus();
+  }, 5000);
 });
 
 </script>
+
+<p class="attribution">Source: <a href="http://www-cs-staff.stanford.edu/~uno/sgb.html">The Stanford GraphBase</a>.
+
+<p>A network can be represented by an <i><a href="http://en.wikipedia.org/wiki/Adjacency_matrix">adjacency matrix</a></i>, where each cell <i>ij</i> represents an edge from vertex <i>i</i> to vertex <i>j</i>. Here, vertices represent characters in a book, while edges represent co-occurrence in a chapter.
+
+<p>Given this two-dimensional representation of a graph, a natural visualization is to show the matrix! However, the effectiveness of a matrix diagram is heavily dependent on the order of rows and columns: if related nodes are placed closed to each other, it is easier to identify clusters and bridges.
+
+<p>This example lets you try different orderings via the drop-down menu. This type of diagram can be extended with manual reordering of rows and columns, and expanding or collapsing of clusters, to allow deeper exploration. <a href="http://en.wikipedia.org/wiki/Jacques_Bertin">Jacques Bertin</a> (or more specifically, his fleet of assistants) did this by hand with paper strips.
+
+<p>While path-following is harder in a matrix view than in a <a href="http://mbostock.github.com/d3/ex/force.html">node-link diagram</a>, matrices have other advantages. As networks get large and highly connected, node-link diagrams often devolve into giant hairballs of line crossings. Line crossings are impossible with matrix views. Matrix cells can also be encoded to show additional data; here color depicts clusters computed by a community-detection algorithm.
+
+<p>Want more? See this analysis of <a href="../shuffle/compare.html">shuffling algorithms</a> using matrix diagrams.
+
+<footer>
+  <aside>January 12, 2012</aside>
+  <a href="../" rel="author">Mike Bostock</a>
+</footer>
+
 <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-  ga('create', 'UA-57485706-1', 'auto');
-  ga('send', 'pageview');
+
+GoogleAnalyticsObject = "ga", ga = function() { ga.q.push(arguments); }, ga.q = [], ga.l = +new Date;
+ga("create", "UA-48272912-3", "ocks.org");
+ga("send", "pageview");
+
 </script>
-</body>
-</html>
+<script async src="//www.google-analytics.com/analytics.js"></script>
