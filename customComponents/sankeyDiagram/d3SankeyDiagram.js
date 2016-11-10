@@ -56,7 +56,7 @@ define('d3SankeyDiagram',['d3', 'sankey'], function (d3) {
 			});
 		}
 
-		var sankey = d3.sankey()
+		var sankey = this.d3.sankey()
 		    .nodeWidth(15)
 		    .nodePadding(10)
 		    .size([width, height]);
