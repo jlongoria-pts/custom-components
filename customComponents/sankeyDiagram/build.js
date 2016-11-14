@@ -3,7 +3,7 @@
     baseUrl: '',
     paths: {
 			'd3': 'd3.min' ,
-      'sankey': 'sankey',
+      			'sankey': 'sankey',
 			'd3SankeyDiagram': 'd3SankeyDiagram'
 	},
 

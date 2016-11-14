@@ -2,66 +2,76 @@ define('d3SankeyDiagram',['d3', 'sankey'], function (d3) {
 
 	 return function (instanceData) {
 
-	 	var width = instanceData.width,
-        height = instanceData.height;
-
-		var dataset = instanceData.series[0];
+		let dataset = instanceData.series[0];
 
 		//Removes duplicate row at the end. Not sure why duplicate occurs.
-    dataset.pop();
+    		dataset.pop();
 
-		var margin = {top: 1, right: 1, bottom: 6, left: 1},
-		    width = 960 - margin.left - margin.right,
-		    height = 500 - margin.top - margin.bottom;
+		let margin = {top: 1, right: 1, bottom: 6, left: 1},
+		    width = instanceData.width - margin.left - margin.right,
+		    height = instanceData.height - margin.top - margin.bottom;
 
-		var formatNumber = d3.format(",.2f"),
+		let formatNumber = d3.format(instanceData.measureFormat),
 		    format = function(d) { return "$" + formatNumber(d); },
 		    color = d3.scale.category20();
 
-		var svg = d3.select("#" + instanceData.id).append("svg")
-				.attr("id", instanceData.id + "svg")
+		let svg = d3.select("#" + instanceData.id).append("svg")
+		     .attr("id", instanceData.id + "svg")
 		    .attr("width", width + margin.left + margin.right)
 		    .attr("height", height + margin.top + margin.bottom)
 		  .append("g")
 		    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
-	  let nodes = [];
+	  let uniqueNodes = [];
 
+		let data = {
+			"nodes":[],
+			"links":[]
+		};
+
+		//Prepare list of unique nodes in dataset.
 		for(let i=0; i < dataset.length; i++) {
-			let source = dataset[i].sources,
-			    target = dataset[i].targets;
+			let nodes = dataset[i].nodes.split(",");
 
-			if (nodes.indexOf(source) == -1) nodes.push(source);
-			if (nodes.indexOf(target) == -1) nodes.push(target);
-		}
-
-
-		let data = { "nodes":[], "links":[] };
-
-		for(let i=0; i < nodes.length; i++) {
-			data.nodes.push( {"name": nodes[i]} );
-		}
-
-
-		for(let i=0; i < dataset.length; i++) {
-			let source = dataset[i].sources,
-			    target = dataset[i].targets,
-					value  = dataset[i].values;
-
-			data.links.push({
-				"source": nodes.indexOf(source),
-				"target": nodes.indexOf(target),
-				"value" : value
+			nodes.forEach(function(node) {
+				if (uniqueNodes.indexOf(node) == -1)
+					uniqueNodes.push(node);
 			});
 		}
 
-		var sankey = this.d3.sankey()
+		//Place list of unique nodes in data JSON
+		for(let i=0; i < uniqueNodes.length; i++) {
+			data.nodes.push( {"name": uniqueNodes[i]} );
+		}
+
+		//Determine the source-target relationships
+		for(let i=0; i < dataset.length; i++) {
+			let nodes = dataset[i].nodes.split(","),
+				value = dataset[i].values;
+
+			for(let j=0; j < nodes.length - 1; j++) {
+				let source = nodes[j],
+					target = nodes[j+1];
+
+				let linkIndex = checkLinks(
+					uniqueNodes.indexOf(source),
+					uniqueNodes.indexOf(target)
+				);
+
+				if(linkIndex >= 0)
+				 	data.links[linkIndex].value += value;
+			  	else
+					pushLink(source, target, value);
+			}
+		}
+
+		let sankey = this.d3.sankey()
 		    .nodeWidth(15)
 		    .nodePadding(10)
 		    .size([width, height]);
 
-		var path = sankey.link();
+		let path = sankey.link();
 
 
 	  sankey
@@ -69,7 +79,7 @@ define('d3SankeyDiagram',['d3', 'sankey'], function (d3) {
 	      .links(data.links)
 	      .layout(32);
 
-	  var link = svg.append("g").selectAll(".link")
+	  let link = svg.append("g").selectAll(".link")
 	      .data(data.links)
 	    .enter().append("path")
 	      .attr("class", "link")
@@ -79,10 +89,10 @@ define('d3SankeyDiagram',['d3', 'sankey'], function (d3) {
 
 	  link.append("title")
 	      .text(function(d) {
-					return d.source.name + " → " + d.target.name + "\n" + format(d.value);
-				});
+		return d.source.name + " → " + d.target.name + "\n" + format(d.value);
+	  });
 
-	  var node = svg.append("g").selectAll(".node")
+	  let node = svg.append("g").selectAll(".node")
 	      .data(data.nodes)
 	    .enter().append("g")
 	      .attr("class", "node")
@@ -116,14 +126,35 @@ define('d3SankeyDiagram',['d3', 'sankey'], function (d3) {
 	      .attr("text-anchor", "start");
 
 	  function dragmove(d) {
-	    d3.select(this).attr("transform", "translate(" + d.x + "," + (d.y = Math.max(0, Math.min(height - d.dy, d3.event.y))) + ")");
+	    d3.select(this).attr("transform",
+				"translate(" + d.x + "," + (
+					d.y = Math.max(0, Math.min(height - d.dy, d3.event.y))
+				) + ")");
 	    sankey.relayout();
 	    link.attr("d", path);
 	  }
 
+		function checkLinks(source, target) {
+			let linkIndex = -1;
 
+			data.links.forEach(function(link, index) {
+				if(link.source == source && link.target == target)
+					 linkIndex = index;
+			});
+
+			return linkIndex;
+		}
+
+		function pushLink(source, target, value) {
+			data.links.push({
+				"source": uniqueNodes.indexOf(source),
+				"target": uniqueNodes.indexOf(target),
+				"value" : value
+			});
+		}
 
 
 	};
 
 });
+
