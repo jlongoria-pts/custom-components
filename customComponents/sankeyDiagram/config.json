@@ -5,7 +5,7 @@
   "thumbnail": "sankey.png",
   "sections": [
     {
-      "name": "Measure format",
+      "name": "Chart properties",
       "expandable": true,
       "properties": [
         {
@@ -15,7 +15,31 @@
          "mandatory": true,
          "defaultValue": ",.2f",
          "type": "Text"
-        }
+       },
+       {
+         "name": "prefix",
+         "label": "Measure Prefix",
+         "description": "The measure's prefix.",
+         "mandatory": true,
+         "defaultValue": "$",
+         "type": "Text"
+       },
+       {
+         "name": "suffix",
+         "label": "Measure Suffix",
+         "description": "The measure's suffix.",
+         "mandatory": true,
+         "defaultValue": " ",
+         "type": "Text"
+       },
+       {
+         "name": "dragBothAxes",
+         "label": "Both Axes Draggable",
+         "description": "Also allow dragging along X-axis.",
+         "mandatory": true,
+         "defaultValue": "false",
+         "type": "Text"
+       }
       ]
     },
     {
@@ -63,104 +87,6 @@
                    "description": "Source/target nodes",
                    "mandatory": true,
                    "defaultValue": "$F{myField1},$F{myField2},...",
-                   "type": "Text"
-           }
-         ]
-       },
-       {
-         "name": "values",
-         "properties": [
-           {
-             "name": "values",
-                   "label": "Values",
-                   "description": "Band values",
-                   "mandatory": true,
-                   "defaultValue": "0",
-                   "type": "Integer"
-           }
-         ]
-       }
-     ]
-   }
- ]
-}
-
-  "description": "D3 Sankey Diagram",
-  "module": "d3SankeyDiagram",
-  "thumbnail": "sankey.png",
-  "sections": [
-    {
-      "name": "Main Measure",
-      "expandable": true,
-      "properties": [
-        {
-         "name": "mainMeasureTitle",
-         "label": "Title",
-         "description": "The title of the main measure.",
-         "mandatory": true,
-         "defaultValue": "Average Daily Attendance: ",
-         "type": "Text"
-        }
-      ]
-    },
-    {
-      "name": "Script",
-      "expandable": true,
-      "properties": [
-         {
-           "name": "script",
-           "label": "Script Path",
-           "description": "Script path",
-           "mandatory": true,
-           "defaultValue": "d3SankeyDiagram.min.js",
-           "type": "Path"
-         },
-         {
-           "name": "css",
-           "label": "CSS Path",
-           "description": "CSS path",
-           "mandatory": true,
-           "defaultValue": "d3SankeyDiagram.css",
-           "type": "Path"
-         },
-         {
-           "name": "module",
-           "label": "Module",
-           "description": "Module",
-           "mandatory": false,
-           "defaultValue": "d3SankeyDiagram",
-           "type": "Path"
-         }
-       ]
-    }
- ],
- "datasets": [
-   {
-     "label": "Main Dataset",
-     "cardinality": -1,
-     "sections": [
-       {
-         "name": "sources",
-         "properties": [
-           {
-             "name": "sources",
-                   "label": "Sources",
-                   "description": "Source nodes",
-                   "mandatory": true,
-                   "defaultValue": "2016-06-02",
-                   "type": "Text"
-           }
-         ]
-       },
-       {
-         "name": "targets",
-         "properties": [
-           {
-             "name": "targets",
-                   "label": "Targets",
-                   "description": "Target nodes",
-                   "mandatory": true,
-                   "defaultValue": "0",
                    "type": "Text"
            }
          ]

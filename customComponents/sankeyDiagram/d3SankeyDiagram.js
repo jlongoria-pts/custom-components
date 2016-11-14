@@ -8,15 +8,22 @@ define('d3SankeyDiagram',['d3', 'sankey'], function (d3) {
     		dataset.pop();
 
 		let margin = {top: 1, right: 1, bottom: 6, left: 1},
-		    width = instanceData.width - margin.left - margin.right,
-		    height = instanceData.height - margin.top - margin.bottom;
+		       width = instanceData.width - margin.left - margin.right,
+		       height = instanceData.height - margin.top - margin.bottom;
 
-		let formatNumber = d3.format(instanceData.measureFormat),
-		    format = function(d) { return "$" + formatNumber(d); },
-		    color = d3.scale.category20();
+		let formatNumber = d3.format(instanceData.measureFormat);
+
+		let format = function(d) {
+					let prefix = instanceData.prefix,
+						suffix = instanceData.suffix;
+
+					return prefix + formatNumber(d) + suffix;
+				}
+
+		let color = d3.scale.category20();
 
 		let svg = d3.select("#" + instanceData.id).append("svg")
-		     .attr("id", instanceData.id + "svg")
+	            .attr("id", instanceData.id + "svg")
 		    .attr("width", width + margin.left + margin.right)
 		    .attr("height", height + margin.top + margin.bottom)
 		  .append("g")
@@ -54,15 +61,15 @@ define('d3SankeyDiagram',['d3', 'sankey'], function (d3) {
 				let source = nodes[j],
 					target = nodes[j+1];
 
-				let linkIndex = checkLinks(
-					uniqueNodes.indexOf(source),
-					uniqueNodes.indexOf(target)
-				);
+				let sourceIndex = uniqueNodes.indexOf(source),
+				    targetIndex = uniqueNodes.indexOf(target);
 
-				if(linkIndex >= 0)
+				let linkIndex = checkLinks(sourceIndex, targetIndex);
+
+				if(linkIndex > -1)
 				 	data.links[linkIndex].value += value;
 			  	else
-					pushLink(source, target, value);
+					pushLink(sourceIndex, targetIndex, value);
 			}
 		}
 
@@ -89,8 +96,8 @@ define('d3SankeyDiagram',['d3', 'sankey'], function (d3) {
 
 	  link.append("title")
 	      .text(function(d) {
-		return d.source.name + " → " + d.target.name + "\n" + format(d.value);
-	  });
+			return d.source.name + " → " + d.target.name + "\n" + format(d.value);
+		});
 
 	  let node = svg.append("g").selectAll(".node")
 	      .data(data.nodes)
@@ -126,29 +133,42 @@ define('d3SankeyDiagram',['d3', 'sankey'], function (d3) {
 	      .attr("text-anchor", "start");
 
 	  function dragmove(d) {
-	    d3.select(this).attr("transform",
-				"translate(" + d.x + "," + (
-					d.y = Math.max(0, Math.min(height - d.dy, d3.event.y))
-				) + ")");
+			if(instanceData.dragBothAxes == "false") {
+		    d3.select(this).attr("transform",
+					"translate(" + d.x + "," + (
+						d.y = Math.max(0, Math.min(height - d.dy, d3.event.y))
+					) + ")");
+			}
+			else {
+				d3.select(this).attr("transform",
+				        "translate(" + (
+				            d.x = Math.max(0, Math.min(width - d.dx, d3.event.x))
+        				)
+        				+ "," + (
+            				d.y = Math.max(0, Math.min(height - d.dy, d3.event.y))
+        				) + ")");
+			}
 	    sankey.relayout();
 	    link.attr("d", path);
 	  }
 
+		//checks for existing node links in links array.
 		function checkLinks(source, target) {
 			let linkIndex = -1;
 
 			data.links.forEach(function(link, index) {
-				if(link.source == source && link.target == target)
+				if(link.source === source && link.target === target)
 					 linkIndex = index;
 			});
 
 			return linkIndex;
 		}
 
+		//links array uses indices of nodes rather than node names.
 		function pushLink(source, target, value) {
 			data.links.push({
-				"source": uniqueNodes.indexOf(source),
-				"target": uniqueNodes.indexOf(target),
+				"source": source,
+				"target": target,
 				"value" : value
 			});
 		}
@@ -157,4 +177,3 @@ define('d3SankeyDiagram',['d3', 'sankey'], function (d3) {
 	};
 
 });
-
