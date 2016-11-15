@@ -5,25 +5,25 @@ define('d3SankeyDiagram',['d3', 'sankey'], function (d3) {
 		let dataset = instanceData.series[0];
 
 		//Removes duplicate row at the end. Not sure why duplicate occurs.
-    		dataset.pop();
+		dataset.pop();
 
 		let margin = {top: 1, right: 1, bottom: 6, left: 1},
-		       width = instanceData.width - margin.left - margin.right,
-		       height = instanceData.height - margin.top - margin.bottom;
+       	width = instanceData.width - margin.left - margin.right,
+       	height = instanceData.height - margin.top - margin.bottom;
 
 		let formatNumber = d3.format(instanceData.measureFormat);
 
 		let format = function(d) {
-					let prefix = instanceData.prefix,
+				let prefix = instanceData.prefix,
 						suffix = instanceData.suffix;
 
-					return prefix + formatNumber(d) + suffix;
-				}
+				return prefix + formatNumber(d) + suffix;
+		}
 
 		let color = d3.scale.category20();
 
 		let svg = d3.select("#" + instanceData.id).append("svg")
-	            .attr("id", instanceData.id + "svg")
+        .attr("id", instanceData.id + "svg")
 		    .attr("width", width + margin.left + margin.right)
 		    .attr("height", height + margin.top + margin.bottom)
 		  .append("g")
@@ -113,7 +113,7 @@ define('d3SankeyDiagram',['d3', 'sankey'], function (d3) {
 	  node.append("rect")
 	      .attr("height", function(d) { return d.dy; })
 	      .attr("width", sankey.nodeWidth())
-	      .style("fill", function(d) { return d.color = color(d.name.replace(/ .*/, "")); })
+	      .style("fill", function(d) { return d.color = color(d.name); })
 	      .style("stroke", function(d) { return d3.rgb(d.color).darker(2); })
 	    .append("title")
 	      .text(function(d) { return d.name + "\n" + format(d.value); });
@@ -133,21 +133,15 @@ define('d3SankeyDiagram',['d3', 'sankey'], function (d3) {
 	      .attr("text-anchor", "start");
 
 	  function dragmove(d) {
-			if(instanceData.dragBothAxes == "false") {
-		    d3.select(this).attr("transform",
-					"translate(" + d.x + "," + (
-						d.y = Math.max(0, Math.min(height - d.dy, d3.event.y))
-					) + ")");
-			}
-			else {
-				d3.select(this).attr("transform",
-				        "translate(" + (
-				            d.x = Math.max(0, Math.min(width - d.dx, d3.event.x))
-        				)
-        				+ "," + (
-            				d.y = Math.max(0, Math.min(height - d.dy, d3.event.y))
-        				) + ")");
-			}
+			let x = Math.max(0, Math.min(width - d.dx, d3.event.x));
+      let y = Math.max(0, Math.min(height - d.dy, d3.event.y));
+
+      let translation = (instanceData.dragBothAxes == "false")     ?
+                      "translate(" +(d.x    )+ "," +(d.y = y)+ ")" :
+                      "translate(" +(d.x = x)+ "," +(d.y = y)+ ")" ;
+
+	    d3.select(this).attr("transform", translation);
+
 	    sankey.relayout();
 	    link.attr("d", path);
 	  }
