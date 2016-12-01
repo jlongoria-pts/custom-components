@@ -1,0 +1,94 @@
+{
+  "label": "Sparkline Chart",
+  "description": "D3 Sparkline chart",
+  "module": "d3SparkLine",
+  "thumbnail": "sparkline.png",
+  "sections": [
+    {
+     "name": "Data",
+     "expandable": true,
+     "properties": [
+       {
+         "name": "color",
+         "label": "Bar Chart Color",
+         "description": "The color of the bars.",
+         "mandatory": true,
+         "defaultValue": "#4F80B7",
+         "type": "Text"
+       },
+       {
+         "name": "format",
+         "label": "Measure format",
+         "description": "The numeric formatting-style for the measure.",
+         "mandatory": true,
+         "defaultValue": ",",
+         "type": "Text"
+       }
+      ]
+   },
+   {
+    "name": "Script",
+    "expandable": true,
+    "properties": [
+        {
+          "name": "script",
+          "label": "Script Path",
+          "description": "Script path",
+          "mandatory": true,
+          "defaultValue": "d3SparkLine.min.js",
+          "type": "Path"
+        },
+        {
+          "name": "css",
+          "label": "CSS Path",
+          "description": "CSS path",
+          "mandatory": true,
+          "defaultValue": "d3SparkLine.css",
+          "type": "Path"
+        },
+        {
+          "name": "module",
+          "label": "Module",
+          "description": "Module",
+          "mandatory": false,
+          "defaultValue": "d3SparkLine",
+          "type": "Path"
+        }
+      ]
+   }
+ ],
+  "datasets": [
+    {
+      "label": "Main Dataset",
+      "cardinality": -1,
+      "sections": [
+        {
+          "name": "category",
+          "properties": [
+            {
+              "name": "category",
+                    "label": "Category",
+                    "description": "Bar chart categories (Text).",
+                    "mandatory": true,
+                    "defaultValue": "First Category",
+                    "type": "Text"
+            }
+          ]
+        },
+        {
+          "name": "measure",
+          "properties": [
+            {
+              "name": "measure",
+                    "label": "Measure",
+                    "description": "Measure column (Float).",
+                    "mandatory": true,
+                    "defaultValue": "25",
+                    "type": "Float"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
