@@ -1,39 +1,33 @@
-let rawWidth = 500, rawHeight = 400;
+let rawWidth = 600, rawHeight = 400;
 
-let margin = {top: 60, right: 40, bottom: 60, left: 40},
+let margin = {top: 60, right: 50, bottom: 60, left: 40},
     width = rawWidth - margin.left - margin.right,
     height = rawHeight - margin.top - margin.bottom;
-
-let svg = d3.select("#dot-chart").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", "translate(" +margin.left+ "," +margin.top+ ")");
 
 let colors10 = d3.scale.category10();
 
 //main data
 let dataset = [
-  {category: "1st Six Weeks", series: "2012", measure: "2000"},
-  {category: "2nd Six Weeks", series: "2012", measure: "2050"},
-  {category: "3rd Six Weeks", series: "2012", measure: "2100"},
-  {category: "4th Six Weeks", series: "2012", measure: "2100"},
-  {category: "5th Six Weeks", series: "2012", measure: "2050"},
-  {category: "6th Six Weeks", series: "2012", measure: "2000"},
+  {category: "1st Six Weeks", series: "2012", measure: "622.7"},
+  {category: "2nd Six Weeks", series: "2012", measure: "628.6"},
+  {category: "3rd Six Weeks", series: "2012", measure: "623.4"},
+  {category: "4th Six Weeks", series: "2012", measure: "613.0"},
+  {category: "5th Six Weeks", series: "2012", measure: "599.7"},
+  {category: "6th Six Weeks", series: "2012", measure: "603.8"},
 
-  {category: "1st Six Weeks", series: "2013", measure: "2010"},
-  {category: "2nd Six Weeks", series: "2013", measure: "2060"},
-  {category: "3rd Six Weeks", series: "2013", measure: "2110"},
-  {category: "4th Six Weeks", series: "2013", measure: "2120"},
-  {category: "5th Six Weeks", series: "2013", measure: "2060"},
-  {category: "6th Six Weeks", series: "2013", measure: "2010"},
+  {category: "1st Six Weeks", series: "2013", measure: "655.4"},
+  {category: "2nd Six Weeks", series: "2013", measure: "653.2"},
+  {category: "3rd Six Weeks", series: "2013", measure: "644.2"},
+  {category: "4th Six Weeks", series: "2013", measure: "613.5"},
+  {category: "5th Six Weeks", series: "2013", measure: "592.6"},
+  {category: "6th Six Weeks", series: "2013", measure: "592.9"},
 
-  {category: "1st Six Weeks", series: "2014", measure: "2020"},
-  {category: "2nd Six Weeks", series: "2014", measure: "2070"},
-  {category: "3rd Six Weeks", series: "2014", measure: "2120"},
-  {category: "4th Six Weeks", series: "2014", measure: "2130"},
-  {category: "5th Six Weeks", series: "2014", measure: "2070"},
-  {category: "6th Six Weeks", series: "2014", measure: "2020"},
+  {category: "1st Six Weeks", series: "2014", measure: "599.5"},
+  {category: "2nd Six Weeks", series: "2014", measure: "604.1"},
+  {category: "3rd Six Weeks", series: "2014", measure: "593.6"},
+  {category: "4th Six Weeks", series: "2014", measure: "567.3"},
+  {category: "5th Six Weeks", series: "2014", measure: "556.7"},
+  {category: "6th Six Weeks", series: "2014", measure: "552.4"},
 ];
 
 let datasetMax = d3.max(
@@ -50,16 +44,43 @@ let datasetCategories = dataset.map(
 
 //measures axis
 let x = d3.scale.linear()
-    .range([width, 0]);
+    .domain( [datasetMin, datasetMax]  )
+    .range( [width, 0] );
 
 //categories axis
 let y = d3.scale.ordinal()
-.rangeRoundBands([0, height], .1);
+    .domain( datasetCategories )
+    .rangePoints([0, height]);
 
-x.domain( [datasetMin, datasetMax]  );
+let axis = d3.svg.axis()
+    .orient("left")
+    .scale(y);
 
-y.domain( datasetCategories );
+//main SVG instance
+let svg = d3.select("#dot-chart").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" +margin.left+ "," +margin.top+ ")");
 
+//axis
+svg.append("g")
+    .attr("class", "axis")
+    .attr("transform", "translate(60, -15)")
+    .attr("font-size", "10px")
+    .call(axis);
+
+//border
+svg.append("rect")
+    .attr("shape-rendering", "crispEdges")
+    .attr("x", "60px")
+    .attr("y", "-30px")
+    .attr("width", width - 30 )
+    .attr("height", height + 30)
+    .attr("fill", "#FFF")
+    .attr("stroke", "#000");
+
+//dots
 svg.selectAll(".dot")
     .data(dataset)
   .enter().append("circle")
@@ -67,8 +88,11 @@ svg.selectAll(".dot")
     .attr("cy", function(d) { return y(d.category); })
     .attr("cx", function(d) { return x(d.measure); })
     .attr("r", 5)
-    .attr("fill", function(d) { return colors10(d.series)} )
- .append("text").text("test")
+    .attr("fill", "#FFF")
+    .attr("fill-opacity", 0.2)
+    .attr("stroke", function(d) { return colors10(d.series)} )
+    .attr("stroke-width", "2px")
+    .attr("transform", "translate(100, -15) scale(0.8, 1)")
  .append("title").text(
    function(d) { return d.category + " - " + d.measure; }
  );
