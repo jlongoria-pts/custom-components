@@ -38,23 +38,27 @@ let datasetMin = d3.min(
   dataset, function(d) { return +d.measure; }
 );
 
-let datasetCategories = dataset.map(
-  function(d) { return d.category; }
+let datasetCategories = _.uniq(
+  dataset.map(function(d) { return d.category; })
 );
 
 //measures axis
 let x = d3.scale.linear()
-    .domain( [datasetMin, datasetMax]  )
-    .range( [width, 0] );
+    .domain( [datasetMin - 10, datasetMax + 10]  )
+    .range( [0, width - 30] );
 
 //categories axis
 let y = d3.scale.ordinal()
     .domain( datasetCategories )
-    .rangePoints([0, height]);
+    .rangePoints( [0, height] );
 
-let axis = d3.svg.axis()
+let yAxis = d3.svg.axis()
     .orient("left")
     .scale(y);
+
+let xAxis = d3.svg.axis()
+    .orient("bottom")
+    .scale(x);
 
 //main SVG instance
 let svg = d3.select("#dot-chart").append("svg")
@@ -63,22 +67,25 @@ let svg = d3.select("#dot-chart").append("svg")
   .append("g")
     .attr("transform", "translate(" +margin.left+ "," +margin.top+ ")");
 
-//axis
+//y-axis
 svg.append("g")
     .attr("class", "axis")
     .attr("transform", "translate(60, -15)")
-    .attr("font-size", "10px")
-    .call(axis);
+    .call(yAxis);
+
+//x-axis
+svg.append("g")
+    .attr("class", "axis")
+    .attr("transform", "translate(60, 280)")
+    .call(xAxis);
 
 //border
 svg.append("rect")
-    .attr("shape-rendering", "crispEdges")
+    .attr("class", "border")
     .attr("x", "60px")
     .attr("y", "-30px")
     .attr("width", width - 30 )
-    .attr("height", height + 30)
-    .attr("fill", "#FFF")
-    .attr("stroke", "#000");
+    .attr("height", height + 30);
 
 //dots
 svg.selectAll(".dot")
@@ -90,9 +97,9 @@ svg.selectAll(".dot")
     .attr("r", 5)
     .attr("fill", "#FFF")
     .attr("fill-opacity", 0.2)
-    .attr("stroke", function(d) { return colors10(d.series)} )
+    .attr("stroke", function(d) { return colors10(d.series); } )
     .attr("stroke-width", "2px")
-    .attr("transform", "translate(100, -15) scale(0.8, 1)")
+    .attr("transform", "translate(60, -15) scale(1, 1)")
  .append("title").text(
    function(d) { return d.category + " - " + d.measure; }
  );

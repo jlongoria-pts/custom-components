@@ -11,7 +11,8 @@ svg {
 }
 
 .axis path,
-.axis line {
+.axis line,
+.border {
   fill: none;
   stroke: #000;
   shape-rendering: crispEdges;
