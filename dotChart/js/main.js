@@ -52,7 +52,7 @@ let scale = {
 //measures axis
 let x = d3.scale.linear()
     .domain( [datasetMin*scale.min, datasetMax*scale.max]  )
-    .range( [0, width - 30] );
+    .range( [0, width] );
 
 //categories axis
 let y = d3.scale.ordinal()
@@ -77,34 +77,34 @@ let svg = d3.select("#dot-chart").append("svg")
 //y-axis
 svg.append("g")
     .attr("class", "axis")
-    .attr("transform", "translate(60, -15)")
+    .attr("transform", "translate(30, -15)")
     .call(yAxis);
 
 //x-axis
 svg.append("g")
     .attr("class", "axis")
-    .attr("transform", "translate(60, "+height+")") //60,280
+    .attr("transform", "translate(30, "+height+")") //60,280
     .call(xAxis);
 
 //border
 svg.append("rect")
     .attr("class", "border")
-    .attr("x", "60px")
+    .attr("x", "30px")
     .attr("y", "-30px")
-    .attr("width", width - 30)
+    .attr("width", width)
     .attr("height", height + 30);
 
 //guidelines
 let guidelines = svg.selectAll(".guidelines")
     .data(datasetCategories).enter();
 
-for(let k=0; k < width - 30; k+=6) {
+for(let k=0; k < width; k+=6) {
   guidelines.append("circle")
     .attr("class", "guidelines")
     .attr("cy", function(d, i) { return y(datasetCategories[i]); })
     .attr("cx", k)
     .attr("r", 0.5)
-    .attr("transform", "translate(60, -15)");
+    .attr("transform", "translate(30, -15)");
 }
 
 //legend
@@ -120,7 +120,7 @@ svg.selectAll(".dot")
     .attr("r", 3)
     .attr("stroke", function(d) { return colors10(d.series); } )
     .attr("stroke-width", "2px")
-    .attr("transform", "translate(60, -15)")
+    .attr("transform", "translate(30, -15)")
  .append("title").text(
    function(d) { return d.category + " - " + d.measure; }
  );
