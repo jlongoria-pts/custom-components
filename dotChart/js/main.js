@@ -24,26 +24,40 @@ let colors10 = d3.scale.category10();
 
 //raw data
 let dataset = [
-  {category: "1st Six Weeks", series: "2012", measure: "622.7"},
-  {category: "2nd Six Weeks", series: "2012", measure: "628.6"},
-  {category: "3rd Six Weeks", series: "2012", measure: "623.4"},
-  {category: "4th Six Weeks", series: "2012", measure: "613.0"},
-  {category: "5th Six Weeks", series: "2012", measure: "599.7"},
-  {category: "6th Six Weeks", series: "2012", measure: "603.8"},
+  {category: "1st Six Weeks", series: "2010-11", measure: "574"},
+  {category: "2nd Six Weeks", series: "2010-11", measure: "575"},
+  {category: "3rd Six Weeks", series: "2010-11", measure: "569"},
+  {category: "4th Six Weeks", series: "2010-11", measure: "579"},
+  {category: "5th Six Weeks", series: "2010-11", measure: "569"},
+  {category: "6th Six Weeks", series: "2010-11", measure: "556"},
 
-  {category: "1st Six Weeks", series: "2013", measure: "655.4"},
-  {category: "2nd Six Weeks", series: "2013", measure: "653.2"},
-  {category: "3rd Six Weeks", series: "2013", measure: "644.2"},
-  {category: "4th Six Weeks", series: "2013", measure: "613.5"},
-  {category: "5th Six Weeks", series: "2013", measure: "592.6"},
-  {category: "6th Six Weeks", series: "2013", measure: "592.9"},
+  {category: "1st Six Weeks", series: "2011-12", measure: "535"},
+  {category: "2nd Six Weeks", series: "2011-12", measure: "539"},
+  {category: "3rd Six Weeks", series: "2011-12", measure: "534"},
+  {category: "4th Six Weeks", series: "2011-12", measure: "532"},
+  {category: "5th Six Weeks", series: "2011-12", measure: "525"},
+  {category: "6th Six Weeks", series: "2011-12", measure: "523"},
 
-  {category: "1st Six Weeks", series: "2014", measure: "599.5"},
-  {category: "2nd Six Weeks", series: "2014", measure: "604.1"},
-  {category: "3rd Six Weeks", series: "2014", measure: "593.6"},
-  {category: "4th Six Weeks", series: "2014", measure: "567.3"},
-  {category: "5th Six Weeks", series: "2014", measure: "556.7"},
-  {category: "6th Six Weeks", series: "2014", measure: "552.4"}
+  {category: "1st Six Weeks", series: "2012-13", measure: "520"},
+  {category: "2nd Six Weeks", series: "2012-13", measure: "520"},
+  {category: "3rd Six Weeks", series: "2012-13", measure: "528"},
+  {category: "4th Six Weeks", series: "2012-13", measure: "518"},
+  {category: "5th Six Weeks", series: "2012-13", measure: "517"},
+  {category: "6th Six Weeks", series: "2012-13", measure: "511"},
+
+  {category: "1st Six Weeks", series: "2013-14", measure: "567"},
+  {category: "2nd Six Weeks", series: "2013-14", measure: "563"},
+  {category: "3rd Six Weeks", series: "2013-14", measure: "558"},
+  {category: "4th Six Weeks", series: "2013-14", measure: "564"},
+  {category: "5th Six Weeks", series: "2013-14", measure: "562"},
+  {category: "6th Six Weeks", series: "2013-14", measure: "558"},
+
+  {category: "1st Six Weeks", series: "2014-15", measure: "569"},
+  {category: "2nd Six Weeks", series: "2014-15", measure: "572"},
+  {category: "3rd Six Weeks", series: "2014-15", measure: "564"},
+  {category: "4th Six Weeks", series: "2014-15", measure: "560"},
+  {category: "5th Six Weeks", series: "2014-15", measure: "559"},
+  {category: "6th Six Weeks", series: "2014-15", measure: "550"}
 ];
 
 //data features
