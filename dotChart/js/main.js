@@ -1,6 +1,6 @@
 let rawWidth = 600, rawHeight = 400;
 
-let margin = {top: 60, right: 50, bottom: 60, left: 40},
+let margin = {top: 60, right: 50, bottom: 60, left: 50},
     width = rawWidth - margin.left - margin.right,
     height = rawHeight - margin.top - margin.bottom;
 
@@ -42,9 +42,16 @@ let datasetCategories = _.uniq(
   dataset.map(function(d) { return d.category; })
 );
 
+let axisTolerance = 0.02;
+
+let scale = {
+  min: +(1 - axisTolerance),
+  max: +(1 + axisTolerance)
+};
+
 //measures axis
 let x = d3.scale.linear()
-    .domain( [datasetMin*0.98, datasetMax*1.02]  )
+    .domain( [datasetMin*scale.min, datasetMax*scale.max]  )
     .range( [0, width - 30] );
 
 //categories axis
@@ -76,7 +83,7 @@ svg.append("g")
 //x-axis
 svg.append("g")
     .attr("class", "axis")
-    .attr("transform", "translate(60, 280)")
+    .attr("transform", "translate(60, "+height+")") //60,280
     .call(xAxis);
 
 //border
@@ -87,19 +94,21 @@ svg.append("rect")
     .attr("width", width - 30)
     .attr("height", height + 30);
 
-
 //guidelines
+let guidelines = svg.selectAll(".guidelines")
+    .data(datasetCategories).enter();
+
 for(let k=0; k < width - 30; k+=6) {
-  svg.selectAll(".guidelines")
-      .data(datasetCategories)
-    .enter().append("circle")
-      .attr("cy", function(d, i) { return y(datasetCategories[i]); })
-      .attr("cx", k)
-      .attr("r", 0.5)
-      .attr("fill", "#000")
-      .attr("fill-opacity", 0.5)
-      .attr("transform", "translate(60, -15)");
+  guidelines.append("circle")
+    .attr("class", "guidelines")
+    .attr("cy", function(d, i) { return y(datasetCategories[i]); })
+    .attr("cx", k)
+    .attr("r", 0.5)
+    .attr("transform", "translate(60, -15)");
 }
+
+//legend
+/* ** */
 
 //dots
 svg.selectAll(".dot")
@@ -109,8 +118,6 @@ svg.selectAll(".dot")
     .attr("cy", function(d) { return y(d.category); })
     .attr("cx", function(d) { return x(d.measure); })
     .attr("r", 3)
-    .attr("fill", "#FFF")
-    .attr("fill-opacity", 0.2)
     .attr("stroke", function(d) { return colors10(d.series); } )
     .attr("stroke-width", "2px")
     .attr("transform", "translate(60, -15)")

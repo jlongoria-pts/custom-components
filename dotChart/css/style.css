@@ -17,3 +17,13 @@ svg {
   stroke: #000;
   shape-rendering: crispEdges;
 }
+
+.guidelines {
+  fill: #000;
+  fill-opacity: 0.5;
+}
+
+.dot {
+  fill: #FFF;
+  fill-opacity: 0.3;
+}
