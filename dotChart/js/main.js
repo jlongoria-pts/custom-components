@@ -43,7 +43,7 @@ let dataset = [
   {category: "3rd Six Weeks", series: "2014", measure: "593.6"},
   {category: "4th Six Weeks", series: "2014", measure: "567.3"},
   {category: "5th Six Weeks", series: "2014", measure: "556.7"},
-  {category: "6th Six Weeks", series: "2014", measure: "552.4"},
+  {category: "6th Six Weeks", series: "2014", measure: "552.4"}
 ];
 
 //data features
@@ -123,7 +123,33 @@ for(let x=0, step=Math.max(width/100, 5); x < width; x+=step) {
 }
 
 //legend
-/* ** */
+svg.selectAll(".legend")
+    .data( data.series )
+  .enter().append("circle")
+    .attr("class", "legend")
+    .attr("cy", height + (2/3)*margin.bottom)
+    .attr("cx", function(d,i) {
+      return (i+1)*(width/data.series.length);
+    })
+    .attr("r", 3)
+    .attr("stroke", function(d) { return colors10(d); } )
+    .attr("stroke-width", "2px")
+    .attr("transform", translate(-margin.left, 0));
+
+
+svg.selectAll(".legend-text")
+    .data( data.series )
+  .enter().append("text")
+    .text(function(d) { return d; })
+    .style("fill", "#000")
+    .style("font-size", "10px")
+    .style("font-family", "sans-serif")
+    .attr("class", "legend-text")
+    .attr("x", function(d,i) {
+      return (i+1)*(width/data.series.length) + 6;
+    })
+    .attr("y", height + (2/3)*margin.bottom + 4)
+    .attr("transform", translate(-margin.left, 0));;
 
 //dots
 svg.selectAll(".dot")

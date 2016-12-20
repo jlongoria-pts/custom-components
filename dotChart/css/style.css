@@ -23,7 +23,8 @@ svg {
   fill-opacity: 0.5;
 }
 
-.dot {
+.dot,
+.legend {
   fill: #FFF;
   fill-opacity: 0.3;
 }
