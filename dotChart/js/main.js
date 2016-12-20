@@ -1,6 +1,6 @@
 let rawWidth = 600, rawHeight = 400;
 
-let margin = {top: 60, right: 50, bottom: 60, left: 50},
+let margin = {top: 80, right: 60, bottom: 100, left: 60},
     width = rawWidth - margin.left - margin.right,
     height = rawHeight - margin.top - margin.bottom;
 
@@ -67,6 +67,8 @@ let xAxis = d3.svg.axis()
     .orient("bottom")
     .scale(x);
 
+let skew = { left: margin.left/2, top:  margin.top/2 };
+
 //main SVG instance
 let svg = d3.select("#dot-chart").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -77,22 +79,22 @@ let svg = d3.select("#dot-chart").append("svg")
 //y-axis
 svg.append("g")
     .attr("class", "axis")
-    .attr("transform", "translate(30, -15)")
+    .attr("transform", "translate(" +skew.left+ ", " +( -skew.top/2 )+ ")")
     .call(yAxis);
 
 //x-axis
 svg.append("g")
     .attr("class", "axis")
-    .attr("transform", "translate(30, "+height+")") //60,280
+    .attr("transform", "translate(" +skew.left+ ", "+height+")")
     .call(xAxis);
 
 //border
 svg.append("rect")
     .attr("class", "border")
-    .attr("x", "30px")
-    .attr("y", "-30px")
+    .attr("x", skew.left)
+    .attr("y", -skew.top)
     .attr("width", width)
-    .attr("height", height + 30);
+    .attr("height", height + skew.top);
 
 //guidelines
 let guidelines = svg.selectAll(".guidelines")
@@ -104,7 +106,7 @@ for(let k=0; k < width; k+=6) {
     .attr("cy", function(d, i) { return y(datasetCategories[i]); })
     .attr("cx", k)
     .attr("r", 0.5)
-    .attr("transform", "translate(30, -15)");
+    .attr("transform", "translate(" +skew.left+ ", " +( -skew.top/2 )+ ")");
 }
 
 //legend
@@ -120,7 +122,7 @@ svg.selectAll(".dot")
     .attr("r", 3)
     .attr("stroke", function(d) { return colors10(d.series); } )
     .attr("stroke-width", "2px")
-    .attr("transform", "translate(30, -15)")
+    .attr("transform", "translate(" +skew.left+ ", " +(-skew.top/2)+ ")")
  .append("title").text(
    function(d) { return d.category + " - " + d.measure; }
  );
