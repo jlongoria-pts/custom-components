@@ -1,5 +1,7 @@
+/**   *** Styles and Formatting ***   **/
+
 //SVG dimensions
-let rawWidth = 600, rawHeight = 300;
+let rawWidth = 500, rawHeight = 300;
 
 let margin = {top: 80, right: 60, bottom: 100, left: 60};
 
@@ -12,15 +14,38 @@ let skew = { left: margin.left/2, top:  margin.top/2 };
 
 //percent axis bias
 let bias = {
-  value: 0.02,
+  value: 0.01,
   lower: function() { return +(1 - this.value) },
   upper: function() { return +(1 + this.value) }
 };
 
 //auto categorical colors
-let colors10 = d3.scale.category10();
+let color = d3.scale.category10();
+
+//text and graphic styling
+let styles = {
+  title: {
+    fontSize: "16px",
+    fontFamily: "sans-serif",
+    fill: "#000"
+  },
+
+  legend: {
+    fontSize: "10px",
+    fontFamily: "sans-serif",
+    fill: "#000"
+  },
+
+  circle: {
+    strokeWidth: "2px",
+    hoverStrokeWidth: "6px",
+    inactiveStroke: "#DDD"
+  }
+};
 
 
+
+/**   *** Data and Statistics ***   **/
 
 //raw data
 let dataset = [
@@ -71,6 +96,8 @@ let data = {
 
 
 
+/**   *** Axes Definitions ***   **/
+
 //measure axis
 let x = d3.scale.linear()
     .domain([
@@ -96,6 +123,8 @@ let yAxis = d3.svg.axis()
 
 
 
+/**   *** Graphic and Text Elements ***   **/
+
 //main SVG instance
 let svg = d3.select("#dot-chart").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -107,9 +136,9 @@ let svg = d3.select("#dot-chart").append("svg")
 svg.append("text")
     .attr("class", "title")
     .text("Enrollment")
-    .style("fill", "#000")
-    .style("font-size", "16px")
-    .style("font-family", "sans-serif")
+    .style("fill", styles.title.fill)
+    .style("font-size", styles.title.fontSize)
+    .style("font-family", styles.title.fontFamily)
     .attr("x", width/2 - 20)
     .attr("y", -margin.top*(3/4))
 
@@ -156,21 +185,19 @@ svg.selectAll(".legend")
       return (i+1)*(width/data.series.length);
     })
     .attr("r", 3)
-    .attr("stroke", function(d) { return colors10(d); })
-    .attr("stroke-width", "2px")
+    .attr("stroke", function(d) { return color(d); })
+    .attr("stroke-width", styles.circle.strokeWidth)
     .attr("transform", translate(-margin.left, 0))
     .on("mouseover", mouseover)
     .on("mouseout", mouseout);
-
-
 
 svg.selectAll(".legend-text")
     .data( data.series )
   .enter().append("text")
     .text(function(d) { return d; })
-    .style("fill", "#000")
-    .style("font-size", "10px")
-    .style("font-family", "sans-serif")
+    .style("fill", styles.legend.fill)
+    .style("font-size", styles.legend.fontSize)
+    .style("font-family", styles.legend.fontFamily)
     .attr("class", "legend-text")
     .attr("x", function(d,i) {
       return (i+1)*(width/data.series.length) + 6;
@@ -188,8 +215,8 @@ svg.selectAll(".dot")
     .attr("cy", function(d) { return y(d.category); })
     .attr("cx", function(d) { return x(d.measure); })
     .attr("r", 3)
-    .attr("stroke", function(d) { return colors10(d.series); })
-    .attr("stroke-width", "2px")
+    .attr("stroke", function(d) { return color(d.series); })
+    .attr("stroke-width", styles.circle.strokeWidth)
     .attr("transform", translate(skew.left, -skew.top/2))
  .append("title").text(
    function(d) { return d.category + " - " + d.measure; }
@@ -198,7 +225,8 @@ svg.selectAll(".dot")
 
 
 
-//helper methods
+/**   *** Helper Methods ***   **/
+
 function translate(x, y) {
   return "translate({x}, {y})"
           .replace("{x}", x)
@@ -207,24 +235,24 @@ function translate(x, y) {
 
 function mouseover(d, i) {
   d3.select(".legend.series-"+ d)
-    .attr("stroke-width", "6px");
+    .attr("stroke-width", styles.circle.hoverStrokeWidth);
 
   data.series.forEach(function(series, index){
     if(index != i) {
       d3.selectAll(".dot.series-" + series)
-        .attr("stroke", "#DDD");
+        .attr("stroke", styles.circle.inactiveStroke);
     }
   });
 }
 
 function mouseout(d, i) {
   d3.select(".legend.series-"+ d)
-    .attr("stroke-width", "2px");
+    .attr("stroke-width", styles.circle.strokeWidth);
 
   data.series.forEach(function(series, index){
     if(index != i) {
       d3.selectAll(".dot.series-" + series)
-        .attr("stroke", function(d) { return colors10(d.series); });
+        .attr("stroke", function(d) { return color(d.series); });
     }
   });
 }
