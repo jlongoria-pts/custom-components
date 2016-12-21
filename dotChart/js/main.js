@@ -150,15 +150,18 @@ for(let x=0, step=Math.max(width/100, 5); x < width; x+=step) {
 svg.selectAll(".legend")
     .data( data.series )
   .enter().append("circle")
-    .attr("class", "legend")
+    .attr("class", function(d) { return "legend series-" + d; })
     .attr("cy", height + (2/3)*margin.bottom)
     .attr("cx", function(d,i) {
       return (i+1)*(width/data.series.length);
     })
     .attr("r", 3)
-    .attr("stroke", function(d) { return colors10(d); } )
+    .attr("stroke", function(d) { return colors10(d); })
     .attr("stroke-width", "2px")
-    .attr("transform", translate(-margin.left, 0));
+    .attr("transform", translate(-margin.left, 0))
+    .on("mouseover", mouseover)
+    .on("mouseout", mouseout);
+
 
 
 svg.selectAll(".legend-text")
@@ -173,17 +176,19 @@ svg.selectAll(".legend-text")
       return (i+1)*(width/data.series.length) + 6;
     })
     .attr("y", height + (2/3)*margin.bottom + 4)
-    .attr("transform", translate(-margin.left, 0));;
+    .attr("transform", translate(-margin.left, 0))
+    .on("mouseover", mouseover)
+    .on("mouseout", mouseout);
 
 //dots
 svg.selectAll(".dot")
     .data(dataset)
   .enter().append("circle")
-    .attr("class", "dot")
+    .attr("class", function(d) { return "dot series-" + d.series; })
     .attr("cy", function(d) { return y(d.category); })
     .attr("cx", function(d) { return x(d.measure); })
     .attr("r", 3)
-    .attr("stroke", function(d) { return colors10(d.series); } )
+    .attr("stroke", function(d) { return colors10(d.series); })
     .attr("stroke-width", "2px")
     .attr("transform", translate(skew.left, -skew.top/2))
  .append("title").text(
@@ -192,9 +197,34 @@ svg.selectAll(".dot")
 
 
 
+
 //helper methods
 function translate(x, y) {
   return "translate({x}, {y})"
           .replace("{x}", x)
           .replace("{y}", y);
+}
+
+function mouseover(d, i) {
+  d3.select(".legend.series-"+ d)
+    .attr("stroke-width", "6px");
+
+  data.series.forEach(function(series, index){
+    if(index != i) {
+      d3.selectAll(".dot.series-" + series)
+        .attr("stroke", "#DDD");
+    }
+  });
+}
+
+function mouseout(d, i) {
+  d3.select(".legend.series-"+ d)
+    .attr("stroke-width", "2px");
+
+  data.series.forEach(function(series, index){
+    if(index != i) {
+      d3.selectAll(".dot.series-" + series)
+        .attr("stroke", function(d) { return colors10(d.series); });
+    }
+  });
 }

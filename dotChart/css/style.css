@@ -28,3 +28,7 @@ svg {
   fill: #FFF;
   fill-opacity: 0.3;
 }
+
+.dot:hover {
+  stroke-width: 6px;
+}
