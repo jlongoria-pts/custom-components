@@ -1,5 +1,5 @@
 //SVG dimensions
-let rawWidth = 600, rawHeight = 400;
+let rawWidth = 600, rawHeight = 300;
 
 let margin = {top: 80, right: 60, bottom: 100, left: 60};
 
@@ -77,11 +77,11 @@ let x = d3.scale.linear()
       data.min * bias.lower(),
       data.max * bias.upper()
     ])
-    .range( [0, width] );
+    .range( [0, width] )
+    .nice();
 
 let xAxis = d3.svg.axis()
     .orient("bottom")
-    .ticks(width/50)
     .scale(x);
 
 
@@ -102,6 +102,16 @@ let svg = d3.select("#dot-chart").append("svg")
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", translate(margin.left, margin.top));
+
+//title
+svg.append("text")
+    .attr("class", "title")
+    .text("Enrollment")
+    .style("fill", "#000")
+    .style("font-size", "16px")
+    .style("font-family", "sans-serif")
+    .attr("x", width/2 - 20)
+    .attr("y", -margin.top*(3/4))
 
 //y-axis
 svg.append("g")
