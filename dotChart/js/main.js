@@ -233,12 +233,6 @@ function translate(x, y) {
           .replace("{y}", y);
 }
 
-d3.selection.prototype.moveToFront = function() {
-  return this.each(function(){
-    this.parentNode.appendChild(this);
-  });
-};
-
 function mouseover(d, i) {
   d3.select(".legend.series-"+ d)
     .attr("stroke-width", styles.circle.hoverStrokeWidth);
