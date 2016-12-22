@@ -233,9 +233,18 @@ function translate(x, y) {
           .replace("{y}", y);
 }
 
+d3.selection.prototype.moveToFront = function() {
+  return this.each(function(){
+    this.parentNode.appendChild(this);
+  });
+};
+
 function mouseover(d, i) {
   d3.select(".legend.series-"+ d)
     .attr("stroke-width", styles.circle.hoverStrokeWidth);
+
+  //redraw pips in case of overlapping values
+  d3.selectAll(".dot.series-"+ d).moveToFront();
 
   data.series.forEach(function(series, index){
     if(index != i) {
@@ -249,10 +258,28 @@ function mouseout(d, i) {
   d3.select(".legend.series-"+ d)
     .attr("stroke-width", styles.circle.strokeWidth);
 
+  d3.selectAll(".dot.series-"+ d).moveToBack();
+
   data.series.forEach(function(series, index){
     if(index != i) {
       d3.selectAll(".dot.series-" + series)
         .attr("stroke", function(d) { return color(d.series); });
+    }
+  });
+}
+
+d3.selection.prototype.moveToFront = function() {
+  return this.each(function() {
+    this.parentNode.appendChild(this);
+  });
+};
+
+d3.selection.prototype.moveToBack = function () {
+  this.each(function() {
+    var firstChild = this.parentNode.firstChild;
+
+    if (firstChild) {
+        this.parentNode.insertBefore(this, firstChild);
     }
   });
 }
