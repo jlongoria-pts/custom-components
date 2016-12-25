@@ -25,21 +25,21 @@ let color = d3.scale.category10();
 //text and graphic styling
 let styles = {
   title: {
-    fontSize: "16px",
+    fontSize:   "16px",
     fontFamily: "sans-serif",
-    fill: "#000"
+    fill:       "#000"
   },
 
   legend: {
-    fontSize: "10px",
+    fontSize:   "10px",
     fontFamily: "sans-serif",
-    fill: "#000"
+    fill:       "#000"
   },
 
   circle: {
-    strokeWidth: "2px",
+    strokeWidth:      "2px",
     hoverStrokeWidth: "6px",
-    inactiveStroke: "#DDD"
+    inactiveStroke:   "#CCC"
   }
 };
 
@@ -127,20 +127,20 @@ let yAxis = d3.svg.axis()
 
 //main SVG instance
 let svg = d3.select("#dot-chart").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+    .attr("width", rawWidth)
+    .attr("height", rawHeight)
   .append("g")
     .attr("transform", translate(margin.left, margin.top));
 
 //title
 svg.append("text")
-    .attr("class", "title")
     .text("Enrollment")
     .style("fill", styles.title.fill)
     .style("font-size", styles.title.fontSize)
     .style("font-family", styles.title.fontFamily)
+    .attr("class", "title")
     .attr("x", width/2 - 20)
-    .attr("y", -margin.top*(3/4))
+    .attr("y", -margin.top*(3/4));
 
 //y-axis
 svg.append("g")
@@ -169,8 +169,8 @@ let guidelines = svg.selectAll(".guidelines")
 for(let x=0, step=Math.max(width/100, 5); x < width; x+=step) {
   guidelines.append("circle")
     .attr("class", "guidelines")
-    .attr("cy", function(d, i) { return y( data.categories[i] ); })
     .attr("cx", x)
+    .attr("cy", function(d, i) { return y( data.categories[i] ); })
     .attr("r", 0.5)
     .attr("transform", translate(skew.left, -skew.top/2));
 }
@@ -180,14 +180,14 @@ svg.selectAll(".legend")
     .data( data.series )
   .enter().append("circle")
     .attr("class", function(d) { return "legend series-" + d; })
-    .attr("cy", height + (2/3)*margin.bottom)
     .attr("cx", function(d,i) {
       return (i+1)*(width/data.series.length);
     })
+    .attr("cy", height + (2/3)*margin.bottom)
     .attr("r", 3)
     .attr("stroke", function(d) { return color(d); })
     .attr("stroke-width", styles.circle.strokeWidth)
-    .attr("transform", translate(-margin.left, 0))
+    .attr("transform", translate(-margin.left))
     .on("mouseover", mouseover)
     .on("mouseout", mouseout);
 
@@ -203,7 +203,7 @@ svg.selectAll(".legend-text")
       return (i+1)*(width/data.series.length) + 6;
     })
     .attr("y", height + (2/3)*margin.bottom + 4)
-    .attr("transform", translate(-margin.left, 0))
+    .attr("transform", translate(-margin.left))
     .on("mouseover", mouseover)
     .on("mouseout", mouseout);
 
@@ -212,8 +212,8 @@ svg.selectAll(".dot")
     .data(dataset)
   .enter().append("circle")
     .attr("class", function(d) { return "dot series-" + d.series; })
-    .attr("cy", function(d) { return y(d.category); })
     .attr("cx", function(d) { return x(d.measure); })
+    .attr("cy", function(d) { return y(d.category); })
     .attr("r", 3)
     .attr("stroke", function(d) { return color(d.series); })
     .attr("stroke-width", styles.circle.strokeWidth)
@@ -224,15 +224,9 @@ svg.selectAll(".dot")
 
 
 
-/*d3.selectAll(".dot")
-    .attribs({
-      "r": 5,
-      "stroke": "#000"
-    });*/
-
 /**   *** Helper Methods ***   **/
 
-function translate(x, y) {
+function translate(x, y=0) {
   return "translate({x}, {y})"
           .replace("{x}", x)
           .replace("{y}", y);
@@ -281,17 +275,4 @@ d3.selection.prototype.moveToBack = function() {
         this.parentNode.insertBefore(this, firstChild);
     }
   });
-}
-
-d3.selection.prototype.attrs = function(properties) {
-  let self = this;
-
-  let keys = _.keys(properties),
-      vals = _.values(properties);
-
-  keys.forEach(function(key, index) {
-    let val = vals[index];
-
-    self.attr(key, val);
-  });
-}
+};
