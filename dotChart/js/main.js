@@ -224,6 +224,11 @@ svg.selectAll(".dot")
 
 
 
+/*d3.selectAll(".dot")
+    .attribs({
+      "r": 5,
+      "stroke": "#000"
+    });*/
 
 /**   *** Helper Methods ***   **/
 
@@ -263,17 +268,30 @@ function mouseout(d, i) {
 }
 
 d3.selection.prototype.moveToFront = function() {
-  return this.each(function() {
+  this.each(function() {
     this.parentNode.appendChild(this);
   });
 };
 
-d3.selection.prototype.moveToBack = function () {
+d3.selection.prototype.moveToBack = function() {
   this.each(function() {
-    var firstChild = this.parentNode.firstChild;
+    let firstChild = this.parentNode.firstChild;
 
     if (firstChild) {
         this.parentNode.insertBefore(this, firstChild);
     }
+  });
+}
+
+d3.selection.prototype.attrs = function(properties) {
+  let self = this;
+
+  let keys = _.keys(properties),
+      vals = _.values(properties);
+
+  keys.forEach(function(key, index) {
+    let val = vals[index];
+
+    self.attr(key, val);
   });
 }
