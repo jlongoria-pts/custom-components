@@ -75,7 +75,7 @@ let dataset = [
   {category: "3rd Six Weeks", series: "2013-14", measure: "558"},
   {category: "4th Six Weeks", series: "2013-14", measure: "564"},
   {category: "5th Six Weeks", series: "2013-14", measure: "562"},
-  {category: "6th Six Weeks", series: "2013-14", measure: "558"},
+  {category: "6th Six Weeks", series: "2013-14", measure: "551"},
 
   {category: "1st Six Weeks", series: "2014-15", measure: "569"},
   {category: "2nd Six Weeks", series: "2014-15", measure: "572"},
@@ -90,8 +90,8 @@ let data = {
   max: d3.max(dataset, function(d) { return +d.measure; }),
   min: d3.min(dataset, function(d) { return +d.measure; }),
 
-  categories: _.uniq(dataset.map(function(d) { return d.category; })),
-  series:     _.uniq(dataset.map(function(d) { return d.series; }))
+  categories: uniq(dataset.map(function(d) { return d.category; })),
+  series:     uniq(dataset.map(function(d) { return d.series; }))
 };
 
 
@@ -170,7 +170,7 @@ for(let x=0, step=Math.max(width/100, 5); x < width; x+=step) {
   guidelines.append("circle")
     .attr("class", "guidelines")
     .attr("cx", x)
-    .attr("cy", function(d, i) { return y( data.categories[i] ); })
+    .attr("cy", function(d, i) { return y(d); })
     .attr("r", 0.5)
     .attr("transform", translate(skew.left, -skew.top/2));
 }
@@ -179,7 +179,9 @@ for(let x=0, step=Math.max(width/100, 5); x < width; x+=step) {
 svg.selectAll(".legend")
     .data( data.series )
   .enter().append("circle")
-    .attr("class", function(d) { return "legend series-" + d; })
+    .attr("class", function(d) {
+      return "legend series-" + classy(d);
+    })
     .attr("cx", function(d,i) {
       return (i+1)*(width/data.series.length);
     })
@@ -188,8 +190,8 @@ svg.selectAll(".legend")
     .attr("stroke", function(d) { return color(d); })
     .attr("stroke-width", styles.circle.strokeWidth)
     .attr("transform", translate(-margin.left))
-    .on("mouseover", mouseover)
-    .on("mouseout", mouseout);
+  .on("mouseover", legendMouseover)
+  .on("mouseout", legendMouseout);
 
 svg.selectAll(".legend-text")
     .data( data.series )
@@ -198,30 +200,37 @@ svg.selectAll(".legend-text")
     .style("fill", styles.legend.fill)
     .style("font-size", styles.legend.fontSize)
     .style("font-family", styles.legend.fontFamily)
-    .attr("class", "legend-text")
+    .attr("class", function(d) {
+      return "legend-text series-" + classy(d);
+    })
     .attr("x", function(d,i) {
       return (i+1)*(width/data.series.length) + 6;
     })
     .attr("y", height + (2/3)*margin.bottom + 4)
     .attr("transform", translate(-margin.left))
-    .on("mouseover", mouseover)
-    .on("mouseout", mouseout);
+  .on("mouseover", legendMouseover)
+  .on("mouseout", legendMouseout);
 
 //dots
 svg.selectAll(".dot")
     .data(dataset)
   .enter().append("circle")
-    .attr("class", function(d) { return "dot series-" + d.series; })
+    .attr("class", function(d) {
+      return "dot" +
+             " category-" + classy(d.category) +
+             " series-"   + classy(d.series)   ;
+    })
     .attr("cx", function(d) { return x(d.measure); })
     .attr("cy", function(d) { return y(d.category); })
     .attr("r", 3)
     .attr("stroke", function(d) { return color(d.series); })
     .attr("stroke-width", styles.circle.strokeWidth)
     .attr("transform", translate(skew.left, -skew.top/2))
+    .on("mouseover", chartMouseover)
+    .on("mouseout", chartMouseout)
  .append("title").text(
    function(d) { return d.category + " - " + d.measure; }
  );
-
 
 
 /**   *** Helper Methods ***   **/
@@ -232,34 +241,81 @@ function translate(x, y=0) {
           .replace("{y}", y);
 }
 
-function mouseover(d, i) {
-  d3.select(".legend.series-"+ d)
+function uniq(arr) {
+  let uniqArr = [];
+
+  arr.forEach(function(el) {
+    if(uniqArr.indexOf(el) === -1) {
+      uniqArr.push(el);
+    }
+  });
+
+  return uniqArr;
+}
+
+//replaces all spaces and periods for class assignment.
+function classy(text) {
+    return text.replace(/\s|\./g, "-");
+}
+
+
+
+/**   *** Mouse Events ***   **/
+
+function chartMouseover(d) {
+  let cat = classy(d.category),
+      ser = classy(d.series);
+
+  d3.selectAll(".dot.category-" +cat+ ".series-" +ser)
+    .attr("stroke-width", "6px")
+    .moveToFront();
+}
+
+function chartMouseout(d) {
+  let cat = classy(d.category),
+      ser = classy(d.series);
+
+  d3.selectAll(".dot.category-" +cat+ ".series-" +ser)
+    .attr("stroke-width", "2px")
+    .moveToBack();
+}
+
+function legendMouseover(d, i) {
+  let selectedSeries = classy(d);
+
+  d3.select(".legend.series-" + selectedSeries)
     .attr("stroke-width", styles.circle.hoverStrokeWidth);
 
   //redraw pips in case of overlapping values
-  d3.selectAll(".dot.series-"+ d).moveToFront();
+  d3.selectAll(".dot.series-" + selectedSeries).moveToFront();
 
-  data.series.forEach(function(series, index){
+  data.series.forEach(function(otherSeries, index){
     if(index != i) {
-      d3.selectAll(".dot.series-" + series)
+      d3.selectAll(".dot.series-" + classy(otherSeries))
         .attr("stroke", styles.circle.inactiveStroke);
     }
   });
 }
 
-function mouseout(d, i) {
-  d3.select(".legend.series-"+ d)
+function legendMouseout(d, i) {
+  let selectedSeries = classy(d);
+
+  d3.select(".legend.series-" + selectedSeries)
     .attr("stroke-width", styles.circle.strokeWidth);
 
-  d3.selectAll(".dot.series-"+ d).moveToBack();
+  d3.selectAll(".dot.series-" + selectedSeries).moveToBack();
 
-  data.series.forEach(function(series, index){
+  data.series.forEach(function(otherSeries, index){
     if(index != i) {
-      d3.selectAll(".dot.series-" + series)
+      d3.selectAll(".dot.series-" + classy(otherSeries))
         .attr("stroke", function(d) { return color(d.series); });
     }
   });
 }
+
+
+
+/**   *** D3 Prototype Modifications ***   **/
 
 d3.selection.prototype.moveToFront = function() {
   this.each(function() {
