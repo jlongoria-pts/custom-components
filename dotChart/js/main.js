@@ -185,7 +185,7 @@ if(data.series.length == 1) {
   legendTranslation = -margin.left*3;
 }
 else if (data.series.length == 2) {
-  legendTranslation = -margin.left*(3/2)
+  legendTranslation = -margin.left*(3/2);
 }
 else {
   legendTranslation = -margin.left;
