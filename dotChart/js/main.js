@@ -22,6 +22,9 @@ let bias = {
 //auto categorical colors
 let color = d3.scale.category10();
 
+//measure formatting
+let format = d3.format(",.1f");
+
 //text and graphic styling
 let styles = {
   title: {
@@ -175,6 +178,19 @@ for(let x=0, step=Math.max(width/100, 5); x < width; x+=step) {
     .attr("transform", translate(skew.left, -skew.top/2));
 }
 
+//legend positioning
+let legendTranslation;
+
+if(data.series.length == 1) {
+  legendTranslation = -margin.left*3;
+}
+else if (data.series.length == 2) {
+  legendTranslation = -margin.left*(3/2)
+}
+else {
+  legendTranslation = -margin.left;
+}
+
 //legend
 svg.selectAll(".legend")
     .data( data.series )
@@ -189,7 +205,7 @@ svg.selectAll(".legend")
     .attr("r", 3)
     .attr("stroke", function(d) { return color(d); })
     .attr("stroke-width", styles.circle.strokeWidth)
-    .attr("transform", translate(-margin.left))
+    .attr("transform", translate(legendTranslation))
   .on("mouseover", legendMouseover)
   .on("mouseout", legendMouseout);
 
@@ -207,7 +223,7 @@ svg.selectAll(".legend-text")
       return (i+1)*(width/data.series.length) + 6;
     })
     .attr("y", height + (2/3)*margin.bottom + 4)
-    .attr("transform", translate(-margin.left))
+    .attr("transform", translate(legendTranslation))
   .on("mouseover", legendMouseover)
   .on("mouseout", legendMouseout);
 
@@ -229,7 +245,7 @@ svg.selectAll(".dot")
     .on("mouseover", chartMouseover)
     .on("mouseout", chartMouseout)
  .append("title").text(
-   function(d) { return d.category + " - " + d.measure; }
+   function(d) { return d.category + " - " + format(d.measure); }
  );
 
 
